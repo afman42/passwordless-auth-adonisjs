@@ -1,0 +1,22 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <title>Auth - register</title>
+  </head>
+  <body>
+
+    <h1>Register</h1>
+    @if(flashMessages.has('errors.email'))
+      <p>{{ flashMessages.get('errors.email') }}</p>
+    @endif
+    @if(flashMessages.has('errors.password'))
+      <p>{{ flashMessages.get('errors.password') }}</p>
+    @endif
+    <form action="/register" method="POST">
+      <input type="email" name="email" placeholder="email" >
+      <input type="password" name="password" placeholder="password" >
+      <button type="submit">Register></button>
+      <a href="/login">Kembali</a>
+    </form>
+  </body>
+</html>

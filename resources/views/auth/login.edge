@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Authentication Login</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+    @if(flashMessages.has('errors.email'))
+      <p>{{ flashMessages.get('errors.email') }}</p>
+    @endif
+    <form action="/login" method="POST">
+      <input type="email" name="email" placeholder="email" >
+      <button type="submit">Login</button>
+      <a href="/register">Kembali</a>
+    </form>
+  </body>
+</html>
