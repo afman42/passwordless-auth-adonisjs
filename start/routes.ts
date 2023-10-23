@@ -25,12 +25,20 @@ Route.get("/", async ({ view, auth }) => {
   return view.render("getMe", { email });
 }).middleware("auth");
 
-Route.get("/login", "AuthenticationController.login");
-Route.get("/register", "AuthenticationController.register");
+Route.get("/login", "AuthenticationController.login").middleware(
+  "checkIsNotLoggedIn"
+);
+Route.get("/register", "AuthenticationController.register").middleware(
+  "checkIsNotLoggedIn"
+);
 Route.get("/verify/:id", "AuthenticationController.verifyEmail").as(
   "verifyEmail"
 );
 
-Route.post("/login", "AuthenticationController.login");
-Route.post("/register", "AuthenticationController.register");
+Route.post("/login", "AuthenticationController.login").middleware(
+  "checkIsNotLoggedIn"
+);
+Route.post("/register", "AuthenticationController.register").middleware(
+  "checkIsNotLoggedIn"
+);
 Route.post("/logout", "AuthenticationController.logout");
