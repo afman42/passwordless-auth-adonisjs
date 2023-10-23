@@ -5,7 +5,7 @@ import Mail from "@ioc:Adonis/Addons/Mail";
 import Route from "@ioc:Adonis/Core/Route";
 
 export default class AuthenticationController {
-  async login({ view, request, auth, response }: HttpContextContract) {
+  async login({ view, request, response, session }: HttpContextContract) {
     if (request.method() === "GET") {
       return view.render("auth/login");
     }
@@ -17,7 +17,14 @@ export default class AuthenticationController {
         ]),
       });
 
-      const payload = await request.validate({ schema: postSchema });
+      const payload = await request.validate({
+        schema: postSchema,
+        messages: {
+          minLength: "The {{ field }} minimum 6",
+          email: "Must format email",
+          required: "The {{ field }} must required",
+        },
+      });
 
       const user = await User.query().where("email", payload.email).first();
 
@@ -28,7 +35,7 @@ export default class AuthenticationController {
             id: user.id,
           },
           {
-            expiresIn: "1h",
+            expiresIn: "30m",
           }
         );
         await Mail.send((message) => {
@@ -39,27 +46,35 @@ export default class AuthenticationController {
             .htmlView("emails/passwordless", { route: passwordUrl });
         });
         response.redirect("/login");
+        session.flash(
+          "success",
+          "Magic link passwordless in the confimation email"
+        );
       }
       if (!user) {
-        return response.badRequest("Invalid Email");
+        response.redirect("/login");
+        session.flash("errorEmail", "Invalid email");
       }
     }
   }
 
-  async register({ view, request, response }: HttpContextContract) {
+  async register({ view, request, response, session }: HttpContextContract) {
     if (request.method() === "GET") {
       return view.render("auth/register");
     }
     if (request.method() === "POST") {
       const postSchema = schema.create({
-        email: schema.string({ trim: true }, [
-          rules.minLength(10),
-          rules.required(),
-        ]),
-        password: schema.string({ trim: true }, [rules.required()]),
+        email: schema.string({ trim: true }, [rules.minLength(10)]),
+        password: schema.string({ trim: true }),
       });
 
-      const payload = await request.validate({ schema: postSchema });
+      const payload = await request.validate({
+        schema: postSchema,
+        messages: {
+          minLength: "The {{ field }} must 10",
+          required: "The {{ field }} must required",
+        },
+      });
 
       const user = new User();
       user.email = payload.email;
@@ -68,6 +83,7 @@ export default class AuthenticationController {
       await user.save();
 
       if (user) {
+        session.flash("success", "Successfully register account");
         response.redirect("/login");
       }
     }
