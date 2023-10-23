@@ -8,6 +8,12 @@
     @if(flashMessages.has('errors.email'))
       <p>{{ flashMessages.get('errors.email') }}</p>
     @endif
+    @if(flashMessages.has('success'))
+      <p>{{ flashMessages.get('success') }}</p>
+    @endif
+    @if(flashMessages.has('errorEmail'))
+      <p>{{ flashMessages.get('errorEmail') }}</p>
+    @endif
     <form action="/login" method="POST">
       <input type="email" name="email" placeholder="email" >
       <button type="submit">Login</button>
